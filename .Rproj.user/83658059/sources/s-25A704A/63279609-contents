@@ -1,0 +1,63 @@
+---
+title: "Assignment 1"
+author: "Rory"
+date: "23 July 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## Question 1
+
+```{r question1}
+my_rbinom <- function(n, size, prob) {
+  sapply(seq_len(n), function(x) sum(ifelse(runif(size) <= prob, 1, 0)))
+}
+```
+
+## Question 2
+
+```{r question2}
+alpha <- 2
+beta <- 0.8
+
+my_beta <- function(n, alpha, beta) {
+  x <- rep_len(NA_real_, length.out = n)
+  count <- 1
+  
+  while (count <= n) {
+    u <- runif(2)
+    v <- rep_len(0, 2)
+    v[1] <- u[1]^(1/alpha)
+    v[2] <- u[2]^(1/beta)
+    w <- v[1] + v[2]
+    if (w <= 1) {
+      x[count] <- v[1]/w
+      count <- count + 1
+    }
+  }
+  return(x)
+}
+
+b <- my_beta(7000, 2, 0.5)
+b_sort <- b[order(b)]
+
+plot(b_sort)
+
+rb <- rbeta(7000, 2, 0.5)
+rb <- rb[order(rb)]
+
+beta_values <- data.frame(
+  values = c(b_sort, rb),
+  source = c(rep_len("mine", 7000), rep_len("standard", 7000)))
+
+ggplot(beta_values, aes(x = values, fill = source)) + geom_histogram(position = "dodge", binwidth = 0.05)
+
+```
+
+
+$$X ~ Beta(\alpha, \beta$$
+

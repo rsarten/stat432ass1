@@ -233,7 +233,8 @@ results <- data.frame(
 ggplot() +
   geom_line(data = results, aes(x = iterations, y = mc), colour = "red") +
   geom_line(data = results, aes(x = iterations, y = is), colour = "blue") +
-  ylab("variance")
+  ylab("variance") +
+  scale_x_continuous(breaks = as.integer(s))
 
 ```
 

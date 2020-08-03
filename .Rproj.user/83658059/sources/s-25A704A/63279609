@@ -7,14 +7,14 @@
     "folds" : "",
     "hash" : "0",
     "id" : "63279609",
-    "lastKnownWriteTime" : 1596020761,
-    "last_content_update" : 1596020761316,
+    "lastKnownWriteTime" : 1596453721,
+    "last_content_update" : 1596453721385,
     "path" : "~/Projects/STAT432/assignment1/assignment1.Rmd",
     "project_path" : "assignment1.Rmd",
     "properties" : {
-        "cursorPosition" : "119,0",
+        "cursorPosition" : "226,22",
         "last_setup_crc32" : "25A704A7c46de44",
-        "scrollLine" : "112",
+        "scrollLine" : "214",
         "tempName" : "Untitled1"
     },
     "relative_order" : 1,

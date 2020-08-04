@@ -107,31 +107,43 @@ $$ f(x) = \dfrac{e^{-x}}{1 - e^{-a}}$$
 
 Therefore
 
-$$ F(x) = u = \dfrac{e^{-x}}{e^{-a} - 1}$$
+$$ F(x) = \int_{0}^{x} \dfrac{e^{-s}}{1 - e^{-a}} ds  = \dfrac{1 - e^{-x}}{1 - e^{-a}} = u $$
 
-$$ e^{-x} = u(e^{-a} - 1) $$
-$$ e^{x} = \dfrac{1}{u(e^{-a} - 1)} $$
-$$ x = \log{(\dfrac{1}{u(e^{-a} - 1)})} $$
-
-$$ -\log(u(e^{-a} - 1)) = x $$
-
+$$ u = \dfrac{1 - e^{-x}}{1 - e^{-a}} $$
+$$ u(1 - e^{-a}) = 1 - e^{-x} $$
+$$ \dfrac{1}{1 - u(1 - e^{-a})} = e^{x} $$
+$$ x = \log{(\dfrac{1}{1 - u(1 - e^{-a})})} $$
 
 Write algorithm
 
+1. Generate $n$ random variables $u$ from $U \sim Uniform(0, 1)$
+2. Return $x = F_x^{-1}(u)$ for each $u$
+
 ```{r trunc_exp}
-n <- 5
-a = 10
-u <- 0.222222
-
-
-1 - exp(-a)
-
-my_trunc_exp <- function(n, a) -log(runif(n) * (exp(-a) - 1) * -1)
-my_trunc_exp(5, 10)
-
-?rexp
-
+my_trunc_exp <- function(n, a) log(1/(1 - runif(n)*(1-exp(-a))))
+hist(my_trunc_exp(1000, 10), breaks = 20, 
+     main = "distribution of 1000 generated values with a = 10",
+     xlab = "x")
 ```
+
+1. Generate $y$ from $Y \sim Exp(1)$ where $0 \le x \le 10$
+2. Calculate $r = \dfrac{f(y)}{c.q(y)}$
+3. If $u < r$, set $x = y$, otherwise return to Step 1
+
+Checking for $c = max\dfrac{f(x)}{q(x)}$
+
+```{r select_c}
+pdf <- function(x, a) exp(-x)/(1 - exp(-a))
+s <- seq(0, 10, 0.01)
+
+c <- max(sapply(s, pdf, 10)/dexp(s, 1))
+c
+```
+
+```{r ar_method}
+yvec <- dexp(runif(1, min = 0, max = 10), 1)
+```
+
 
 ## Question 5
 
@@ -160,11 +172,9 @@ Given $X_{1}^{2} + X_{2}^{2} \sim \chi_{2}^{2} $ we can verify our result is clo
 
 ### Using importance sampling method
 
-There are any number of potential 
+There are any number of potential alternative distributions to sample from. I looked at several distributions before deciding that I would investigate various Chi Square distributions as these seem to cover the tail well with larger degrees of freedom.
 
-We will draw from a Chi Square distribution with a larger tale, to ensure that we will cover the tail that we are most interested in. After some experimentation ...
-
-```{r compare_dist}
+```{r compare_dist, echo=FALSE}
 ggplot() +
   stat_function(data = data.frame(x = 0:20),
                 aes(x = x, colour = "chi(2)"),
@@ -202,7 +212,7 @@ ggplot() +
   ylab("variance")
 ```
 
-Based on this rough result we will choose to use a Chi Square distribution with degrees of freedom = 7 as our alternate sampling distribution.
+Based on this rough result we will choose to use a Chi Square distribution with 7 degrees of freedom as our alternate sampling distribution.
 
 ```{r imps_result}
 imps(7, 1e4, 1e4)
@@ -214,14 +224,12 @@ In order to compare the performance of the methods I will write slightly customi
 actual_p = pchisq(5, 2, lower.tail = FALSE)
 n = 1e4
 
-s <- seq(1e2, 1e4, 1e3)
+s <- seq(1e3, 0.7e4, 1e3)
 mc <- rep_len(0, length(s))
 is <- rep_len(0, length(s))
-
 for (i in seq_along(s)) {
   mc[i] <- mci(n, s[i])[["var"]]
   is[i] <- imps(7, n, s[i])[["var"]]
-  print(i)
 }
 
 results <- data.frame(
@@ -235,7 +243,8 @@ ggplot() +
   geom_line(data = results, aes(x = iterations, y = is), colour = "blue") +
   ylab("variance") +
   scale_x_continuous(breaks = as.integer(s))
-
 ```
+
+We see that using the Importance Sampling Method our variance is much lower than traditional Monte Carlo and stabilises very quickly even at lower iterations.
 
 

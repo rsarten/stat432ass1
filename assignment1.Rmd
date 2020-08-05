@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
+library(magrittr)
 ```
 
 ## Question 1
@@ -163,7 +164,7 @@ mci <- function(n, niter) {
 mci(1000, 1000)
 ```
 
-Given $X_{1}^{2} + X_{2}^{2} \sim \chi_{2}^{2} $ we can verify our result is close to the expected result
+Given we can define this as a Chi Square distribution we can verify our result is close to the expected result
 
 ```{r chi}
 ## this approximates to the result of 
@@ -215,7 +216,7 @@ ggplot() +
 Based on this rough result we will choose to use a Chi Square distribution with 7 degrees of freedom as our alternate sampling distribution.
 
 ```{r imps_result}
-imps(7, 1e4, 1e4)
+#imps(7, 1e4, 1e4)
 ```
 
 In order to compare the performance of the methods I will write slightly customised functions to demonstrate ... 
